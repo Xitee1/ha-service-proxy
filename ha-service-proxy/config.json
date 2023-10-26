@@ -34,4 +34,5 @@
       "server": "url",
       "auth_token": "str?"
     },
+    "image": "ha-service-proxy/ha-service-proxy-{arch}"
 }
