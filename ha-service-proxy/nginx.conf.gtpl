@@ -24,25 +24,13 @@ events {
 }
 
 http {
-    access_log              off;
-    client_max_body_size    4G;
     default_type            application/octet-stream;
-    keepalive_timeout       65;
-    sendfile                off;
-    server_tokens           off;
-    tcp_nodelay             on;
+    access_log              off;
+    sendfile                on;
     tcp_nopush              on;
-
-    map $http_upgrade $connection_upgrade {
-        default upgrade;
-        ''      close;
-    }
-    resolver 127.0.0.11 ipv6=off;
 
     server {
         listen 8099 default_server;
-
-        root /dev/null;
         server_name _;
 
         location / {
@@ -50,16 +38,8 @@ http {
             deny    all;
 
             set     $target "{{ .server }}";
-            set     $token "{{ .auth_token }}";
 
-            set $args                   $args&token=$token;
             proxy_pass                  $target;
-            proxy_http_version          1.1;
-            proxy_ignore_client_abort   off;
-            proxy_read_timeout          86400s;
-            proxy_redirect              off;
-            proxy_send_timeout          86400s;
-            proxy_max_temp_file_size    0;
 
             proxy_set_header Accept-Encoding "";
             proxy_set_header Connection $connection_upgrade;
@@ -69,7 +49,6 @@ http {
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_set_header X-NginX-Proxy true;
             proxy_set_header X-Real-IP $remote_addr;
-
         }
     }
 }
